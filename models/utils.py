@@ -7,7 +7,6 @@ def down(
 ):
     diff = in_size + 2 * padding - dilation * (kernel_size - 1) - 1 + stride
     out_size = diff // stride
-    print(out_size)
     if times <= 1:
         return out_size
     else:

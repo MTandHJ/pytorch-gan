@@ -61,7 +61,7 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg():
     from freegan.dict2obj import Config
     from freegan.base import Generator, Discriminator, Coach
-    from freegan.utils import gpu
+    from freegan.utils import gpu, load_checkpoint
 
     cfg = Config()
 
@@ -171,7 +171,7 @@ def main(
                     "epoch": epoch
                 }
             )
-            imgs = coach.generator.evaluate(times=10)
+            imgs = coach.generator.evaluate(batch_size=10)
             fp = imagemeter(imgs)
             writter.add_figure(f"Image-Epoch:{epoch}", fp, global_step=epoch)
 

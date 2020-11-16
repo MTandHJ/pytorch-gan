@@ -126,7 +126,7 @@ def load_checkpoint(path, models):
     checkpoints = torch.load(path)
     for key, model in models.items():
         checkpoint = checkpoints[key]
-        model.load_state_dict(checkpoint['model'])
+        model.load_state_dict(checkpoint)
     epoch = checkpoints['epoch'] + 1 # !
     return epoch
 

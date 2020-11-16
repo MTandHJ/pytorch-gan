@@ -39,17 +39,17 @@ class Generator(nn.Module):
             raise NotImplementedError(f"No such rtype {rtype}.")
     
     @torch.no_grad()
-    def evaluate(self, z=None, times=10):
+    def evaluate(self, z=None, batch_size=10):
         if z is None:
-            z = self.sampler(times)
+            z = self.sampler(batch_size)
         else:
             z = z.to(self.device)
         self.arch.eval()
         imgs = self.arch(z)
         return imgs
 
-    def save(self, path):
-        torch.save(self.arch.state_dict(), path + "/generator_paras.pt")
+    def save(self, path, postfix=""):
+        torch.save(self.arch.state_dict(), path + f"/generator{postfix}_paras.pt")
 
     def state_dict(self, destination=None, prefix='', keep_vars=False):
         destination = super(Generator, self).state_dict(
@@ -64,7 +64,7 @@ class Generator(nn.Module):
         self.optimizer.load_state_dict(state_dict['optimizer'])
         self.learning_policy.load_state_dict(state_dict['learning_policy'])
         del state_dict['optimizer'], state_dict['learning_policy']
-        return super(Discriminator, self).load_state_dict(state_dict, strict)
+        return super(Generator, self).load_state_dict(state_dict, strict)
 
     def query(self, *inputs):
         return self.arch(*inputs)
@@ -87,8 +87,8 @@ class Discriminator(nn.Module):
         self.optimizer = optimizer
         self.learning_policy = learning_policy
 
-    def save(self, path):
-        torch.save(self.arch.state_dict(), path + "/discriminator_paras.pt")
+    def save(self, path, postfix=""):
+        torch.save(self.arch.state_dict(), path + f"/discriminator{postfix}_paras.pt")
 
     def state_dict(self, destination=None, prefix='', keep_vars=False):
         destination = super(Discriminator, self).state_dict(

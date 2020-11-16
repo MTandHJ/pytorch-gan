@@ -75,7 +75,7 @@ python dcgan.py cifar10
 
 
 
-![image-20201114152843644](README.assets/image-20201114152843644.png)
+![image-20201116201751371](README.assets/image-20201116201751371.png)
 
 ![image-20201114152902804](README.assets/image-20201114152902804.png)
 
