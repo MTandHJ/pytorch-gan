@@ -41,6 +41,25 @@ python gan.py cifar10
 
 
 
+## CGAN
+
+
+
+> Mirza M & Osindero S. Conditional Generative Adversarial Nets. arXiv preprint arXiv 1411.1784, 2014.
+
+
+
+```
+python cgan.py mnist
+python cgan.py cifar10
+```
+
+
+
+![image-20201115200615338](README.assets/image-20201115200615338.png)
+
+![image-20201116075437888](README.assets/image-20201116075437888.png)
+
 ## DCGAN
 
 
@@ -59,3 +78,6 @@ python dcgan.py cifar10
 ![image-20201114152843644](README.assets/image-20201114152843644.png)
 
 ![image-20201114152902804](README.assets/image-20201114152902804.png)
+
+
+

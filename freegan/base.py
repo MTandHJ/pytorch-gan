@@ -66,11 +66,11 @@ class Generator(nn.Module):
         del state_dict['optimizer'], state_dict['learning_policy']
         return super(Discriminator, self).load_state_dict(state_dict, strict)
 
-    def query(self, z):
-        return self.arch(z)
+    def query(self, *inputs):
+        return self.arch(*inputs)
 
-    def forward(self, z):
-        return self.query(z)
+    def forward(self, *inputs):
+        return self.query(*inputs)
 
 
 class Discriminator(nn.Module):
@@ -105,11 +105,11 @@ class Discriminator(nn.Module):
         del state_dict['optimizer'], state_dict['learning_policy']
         return super(Discriminator, self).load_state_dict(state_dict, strict)
 
-    def query(self, x):
-        return self.arch(x)
+    def query(self, *inputs):
+        return self.arch(*inputs)
 
-    def forward(self, x):
-        return self.query(x)
+    def forward(self, *inputs):
+        return self.query(*inputs)
 
 
 class Coach:
@@ -144,7 +144,7 @@ class Coach:
             # generator part
             self.generator.train()
             self.discriminator.eval()
-            z = self.generator.sampler(inputs_real.size(0))
+            z = self.generator.sampler(batch_size)
             inputs_fake = self.generator(z)
             outs_g = self.discriminator(self.normalizer(inputs_fake))
             loss_g = self.generator.criterion(outs_g, labels_real) # real...

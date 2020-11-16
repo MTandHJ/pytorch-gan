@@ -2,7 +2,7 @@
 
 import torch
 import torch.nn as nn
-from .utils import down
+from utils import down, up
 
 
 
@@ -19,16 +19,15 @@ class Generator(nn.Module):
         self.conv = nn.Sequential(
             nn.BatchNorm2d(128), # n x 128 x h x w
             nn.ReLU(inplace=True),
-            nn.Upsample(scale_factor=2), # n x 128 x 2h x 2w
-            nn.Conv2d(128, 128, 3, stride=1, padding=1), # n x 128 x 2h x 2w
+            # use conv instead of upsample as the paper suggested
+            nn.ConvTranspose2d(128, 128, 3, stride=2, padding=1, output_padding=1), # n x 128 x 2h x 2w
             nn.BatchNorm2d(128, 0.8),
             nn.ReLU(inplace=True), 
-            nn.Upsample(scale_factor=2), # n x 128 x 4h x 4w
-            nn.Conv2d(128, 64, 3, stride=1, padding=1), # n x 64 x 4h x 4w
+            nn.ConvTranspose2d(128, 64, 3, stride=2, padding=1, output_padding=1), # n x 64 x 4h x 4w
             nn.BatchNorm2d(64, 0.8),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, c, 3, stride=1, padding=1), # n x c x 4h x 4w
-            # no batchnorm at the output layer as the paper said
+            # no batchnorm at the output layer as the paper suggested
             nn.Sigmoid() # not tanh as used in the paper
         )
 
@@ -67,8 +66,8 @@ class Discriminator(nn.Module):
             *discriminator_block(64, 128)
         )
 
-        h = down(in_shape[1], 3, 4, 2, 1)
-        w = down(in_shape[1], 3, 4, 2, 1)
+        h = down(in_shape[1], 3, 2, 1, 4)
+        w = down(in_shape[2], 3, 2, 1, 4)
         self.fc = nn.Sequential(
             nn.Linear(128 * h * w, 1),
             nn.Sigmoid()

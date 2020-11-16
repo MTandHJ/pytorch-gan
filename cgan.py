@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
 """
-Goodfellow I., Pouget-Abadie J., Mirza M., Xu B., Warde-Farley D., Ozair S., Courville A. & Bengio Yoshua. 
-Generative adversarial nets. ICLR, 2014.
+Mirza M & Osindero S. Conditional Generative Adversarial Nets.
+arXiv preprint arXiv 1411.1784, 2014.
 """
 
 
 import argparse
 from freegan.loadopts import *
 
-METHOD = "GAN"
+METHOD = "CGAN"
 VALID_EPOCHS = 20
 FMT = "{description}=" \
         "={dim_latent}-{criterion_g}-{learning_policy_g}-{optimizer_g}-{lr_g}" \
@@ -18,8 +18,8 @@ FMT = "{description}=" \
 
 parser = argparse.ArgumentParser()
 parser.add_argument("dataset", type=str)
-parser.add_argument("-g", "--generator", type=str, default="gan-g")
-parser.add_argument("-d", "--discriminator", type=str, default="gan-d")
+parser.add_argument("-g", "--generator", type=str, default="cgan-g")
+parser.add_argument("-d", "--discriminator", type=str, default="cgan-d")
 # for generator
 parser.add_argument("--dim_latent", type=int, default=128)
 parser.add_argument("-cg", "--criterion_g", type=str, default="bce")
@@ -57,18 +57,22 @@ opts.description = FMT.format(**opts.__dict__)
 
 def load_cfg():
     from freegan.dict2obj import Config
-    from freegan.base import Generator, Discriminator, Coach
+    from freegan.base import Discriminator
+    from individuation.cgan import CGANCoach, CGANGenerator
     from freegan.utils import gpu
 
     cfg = Config()
 
+    cfg['num_classes'] = get_num_classes(opts.dataset)
     # load model
     arch_g = load_model(model_type=opts.generator)(
         out_shape=get_shape(opts.dataset),
-        dim_input=opts.dim_latent
+        dim_input=opts.dim_latent,
+        num_classes=cfg.num_classes
     )
     arch_d = load_model(model_type=opts.discriminator)(
-        in_shape=get_shape(opts.dataset)
+        in_shape=get_shape(opts.dataset),
+        num_classes=cfg.num_classes
     )
     device = gpu(arch_g, arch_d)
 
@@ -110,7 +114,7 @@ def load_cfg():
     criterion_d = load_loss_func(loss_type=opts.criterion_d)
 
     # load generator
-    generator = Generator(
+    generator = CGANGenerator(
         arch=arch_g, device=device,
         dim_latent=opts.dim_latent, 
         criterion=criterion_g,
@@ -142,11 +146,12 @@ def load_cfg():
 
 
     # load coach
-    cfg['coach'] = Coach(
+    cfg['coach'] = CGANCoach(
         generator=generator,
         discriminator=discriminator,
         device=device,
-        normalizer=normalizer
+        normalizer=normalizer,
+        num_classes=cfg.num_classes
     )
 
     return cfg, log_path
@@ -154,7 +159,7 @@ def load_cfg():
 
 
 def main(
-    coach, trainloader,
+    coach, trainloader, num_classes,
     start_epoch, info_path
 ):
     from freegan.utils import save_checkpoint, imagemeter
@@ -168,7 +173,8 @@ def main(
                     "epoch": epoch
                 }
             )
-            imgs = coach.generator.evaluate(times=10)
+
+            imgs = coach.generator.evaluate(num_classes=num_classes)
             fp = imagemeter(imgs)
             writter.add_figure(f"Image-Epoch:{epoch}", fp, global_step=epoch)
 

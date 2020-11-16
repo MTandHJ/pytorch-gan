@@ -16,13 +16,20 @@ class OptimNotIncludeError(Exception): pass
 class DatasetNotIncludeError(Exception): pass
 
 
-# return the num_classes of corresponding data set
+# return the num_classes of corresponding dataset
+def get_num_classes(dataset_type: str):
+    try:
+        return NUMCLASSES[dataset_type]
+    except KeyError:
+        raise DatasetNotIncludeError("Dataset {0} is not included." \
+                        "Refer to the following: {1}".format(dataset_type, _dataset.__doc__))
+
+
+# return the shape of corresponding dataset
 def get_shape(dataset_type: str):
-    if dataset_type in ('mnist', ):
-        return (1, 28, 28)
-    elif dataset_type in ('cifar10', 'cifar100'):
-        return (3, 32, 32)
-    else:
+    try:
+        return SHAPES[dataset_type]
+    except:
         raise DatasetNotIncludeError("Dataset {0} is not included." \
                         "Refer to the following: {1}".format(dataset_type, _dataset.__doc__))
 
@@ -31,6 +38,10 @@ def load_model(model_type: str):
     """
     gan-g: the generator defined in gan.py
     gan-d: the discriminator defined in gan.py
+    dcgan-g: the generator defined in dcgan.py
+    dcgan-d: the discriminator defined in the dcgan.py
+    cgan-g: the generator defined in cgan.py
+    cgan-d: the discriminator defined in the cgan.py
     """
     if model_type == "gan-g":
         from models.gan import Generator
@@ -43,6 +54,12 @@ def load_model(model_type: str):
         model = Generator
     elif model_type == "dcgan-d":
         from models.dcgan import Discriminator
+        model = Discriminator
+    elif model_type == "cgan-g":
+        from models.cgan import Generator
+        model = Generator
+    elif model_type == "cgan-d":
+        from models.cgan import Discriminator
         model = Discriminator
     else:
         raise ModelNotDefineError(f"model {model_type} is not defined.\n" \
@@ -61,6 +78,9 @@ def load_loss_func(loss_type: str):
     elif loss_type == "bce":
         from .loss_zoo import bce_loss
         loss_func = bce_loss
+    elif loss_type == "mse":
+        from .loss_zoo import mse_loss
+        loss_func = mse_loss
     else:
         raise LossNotDefineError(f"Loss {loss_type} is not defined.\n" \
                     f"Refer to the following: {load_loss_func.__doc__}")

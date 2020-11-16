@@ -35,6 +35,17 @@ STDS = {
     "svhn": [0.2675, 0.2565, 0.2761]
 }
 
+NUMCLASSES = {
+    "mnist": 10,
+    "cifar10": 10,
+    "cifar100": 100
+}
+
+SHAPES = {
+    "mnist": (1, 28, 28),
+    "cifar10": (3, 32, 32),
+    "cifar100": (3, 32, 32)
+}
 
 TRANSFORMS = {
     "mnist": {

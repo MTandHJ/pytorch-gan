@@ -6,6 +6,11 @@ import torch.nn.functional as F
 
 
 
-cross_entropy = nn.CrossEntropyLoss()
+def cross_entropy(logits, targets, reduction="mean"):
+    return F.cross_entropy(logits, targets, reduction=reduction)
 
-bce_loss = nn.BCELoss()
+def bce_loss(probs, targets, reduction="mean"):
+    return F.binary_cross_entropy(probs, targets, reduction=reduction)
+
+def mse_loss(x, y, reduction="mean"):
+    return F.mse_loss(x, y, reduction=reduction)
