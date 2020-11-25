@@ -60,6 +60,27 @@ python cgan.py cifar10
 
 ![image-20201116075437888](README.assets/image-20201116075437888.png)
 
+
+
+## LAPGAN
+
+
+
+> Denton E., Chintala S., Szlam A. & Fergus R. Deep Generative Image Models using a Laplacian Pyramid of Adversarial Networks. arXiv preprint arXiv 1506.05751, 2015.
+
+**Fail**
+
+```
+python lapgan.py mnist
+python lapgan.py cifar10
+```
+
+
+
+**remark:** I feel troublesome to implement it exactly which has so many hyper parameters to control for different datasets. Therefore, I just try a simple way to implement it which could be used in both MNIST and CIFAR-10.
+
+
+
 ## DCGAN
 
 
@@ -77,7 +98,30 @@ python dcgan.py cifar10
 
 ![image-20201116201751371](README.assets/image-20201116201751371.png)
 
-![image-20201114152902804](README.assets/image-20201114152902804.png)
+![image-20201117072320162](README.assets/image-20201117072320162.png)
+
+
+
+
+
+## InfoGAN
+
+
+
+> Chen X., Duan Y., Houthooft R., Schulman J., Sutskever I., Abbeel P. InfoGAN: Interpretable Representation Learning by Information Maximizing Generative Adversarial Nets. arXiv preprint arXiv 1606.03657, 2016. 
+
+
+
+```
+python infogan.py mnist --dim_noise=62 --dim_code=2
+python infogan.py cifar10 --dim_noise=128 --dim_code=4
+```
+
+
+
+
+
+
 
 
 

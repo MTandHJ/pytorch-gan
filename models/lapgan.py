@@ -19,11 +19,14 @@ class Generator(nn.Module):
         self.conv2 = nn.Sequential(
             nn.Conv2d(middle_channels, middle_channels, 3, 1, 1),
             nn.BatchNorm2d(middle_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(middle_channels, middle_channels * 2, 3, 1, 1),
+            nn.BatchNorm2d(middle_channels * 2),
             nn.ReLU(inplace=True)
         )
         self.conv3 = nn.Sequential(
-            nn.Conv2d(middle_channels, out_channels, 3, 1, 1),
-            nn.Sigmoid()
+            nn.Conv2d(middle_channels * 2, out_channels, 3, 1, 1),
+            # nn.Sigmoid()
         )
 
     def forward(self, x):

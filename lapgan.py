@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 """
-Goodfellow I., Pouget-Abadie J., Mirza M., Xu B., Warde-Farley D., Ozair S., Courville A. & Bengio Yoshua. 
-Generative adversarial nets. ICLR, 2014.
+Denton E., Chintala S., Szlam A. & Fergus R.
+Deep Generative Image Models using a Laplacian Pyramid of Adversarial Networks.
+arXiv preprint arXiv 1506.05751, 2015.
 """
 
 
@@ -10,7 +11,7 @@ import argparse
 from freegan.loadopts import *
 
 METHOD = "LAPGAN"
-VALID_EPOCHS = 20
+VALID_EPOCHS = 10
 FMT = "{description}=" \
         "={criterion_g}-{learning_policy_g}-{optimizer_g}-{lr_g}" \
         "={criterion_d}-{learning_policy_d}-{optimizer_d}-{lr_d}" \
@@ -24,14 +25,14 @@ parser.add_argument("-d", "--discriminator", type=str, default="lapgan-d")
 # for generator
 parser.add_argument("-cg", "--criterion_g", type=str, default="bce")
 parser.add_argument("-og", "--optimizer_g", type=str, choices=("sgd", "adam"), default="adam")
-parser.add_argument("-lrg", "--lr_g", "--LR_G", "--learning_rate_g", type=float, default=0.002)
-parser.add_argument("-lpg", "--learning_policy_g", type=str, default="cosine", 
+parser.add_argument("-lrg", "--lr_g", "--LR_G", "--learning_rate_g", type=float, default=0.0002)
+parser.add_argument("-lpg", "--learning_policy_g", type=str, default="none", 
                 help="learning rate schedule defined in config.py")
 
 # for discriminator
 parser.add_argument("-cd", "--criterion_d", type=str, default="bce")
 parser.add_argument("-od", "--optimizer_d", type=str, choices=("sgd", "adam"), default="adam")
-parser.add_argument("-lrd", "--lr_d", "--LR_D", "--learning_rate_d", type=float, default=0.002)
+parser.add_argument("-lrd", "--lr_d", "--LR_D", "--learning_rate_d", type=float, default=0.0002)
 parser.add_argument("-lpd", "--learning_policy_d", type=str, default="none", 
                 help="learning rate schedule defined in config.py")
 

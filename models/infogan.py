@@ -1,0 +1,122 @@
+
+
+import torch
+import torch.nn as nn
+from .utils import down, up
+
+
+
+class Generator(nn.Module):
+
+    def __init__(self, out_shape, dim_noise=62, dim_label=10, dim_code=2):
+        """Arguments:
+        dim_noise: the dim of latent variabel
+        dim_label: generally, the num of classes
+        dim_code: the num of variables to control the style
+        """
+        super(Generator, self).__init__()
+
+        dim_input = dim_noise + dim_label + dim_code
+        c = out_shape[0]
+        self.h = out_shape[1] // 4
+        self.w = out_shape[2] // 4
+        self.fc = nn.Linear(dim_input, 128 * self.h * self.w)
+
+        self.conv = nn.Sequential(
+            nn.BatchNorm2d(128), # n x 128 x h x w
+            nn.ReLU(inplace=True),
+            nn.ConvTranspose2d(128, 128, 3, stride=2, padding=1, output_padding=1), # n x 128 x 2h x 2w
+            nn.BatchNorm2d(128, 0.8),
+            nn.ReLU(inplace=True), 
+            nn.ConvTranspose2d(128, 64, 3, stride=2, padding=1, output_padding=1), # n x 64 x 4h x 4w
+            nn.BatchNorm2d(64, 0.8),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, c, 3, stride=1, padding=1), # n x c x 4h x 4w
+            nn.Sigmoid() # not tanh as used in the paper
+        )
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.normal_(m.weight.data, 0., 0.02)
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.normal_(m.weight.data, 1., 0.02)
+                nn.init.constant_(m.bias.data, 0.)
+
+    def forward(self, inputs):
+        l1 = self.fc(inputs).view(inputs.size(0), -1, self.h, self.w)
+        outs = self.conv(l1)
+        return outs
+
+class Discriminator(nn.Module):
+
+    def __init__(self, in_shape, dim_label=10, dim_code=2):
+        super(Discriminator, self).__init__()
+
+        def discriminator_block(in_filters, out_filters, bn=True):
+            block = [
+                nn.Conv2d(in_filters, out_filters, 3, stride=2, padding=1),
+                nn.LeakyReLU(0.2, inplace=True), # use leakyrelu instead of relu
+                nn.Dropout2d(0.25)
+            ]
+            if bn:
+                block.append(nn.BatchNorm2d(out_filters, 0.8))
+            return block
+
+        self.conv = nn.Sequential(
+            # no batchnorm at the input latyer as the paper suggested
+            *discriminator_block(in_shape[0], 16, bn=False),
+            *discriminator_block(16, 32),
+            *discriminator_block(32, 64),
+            *discriminator_block(64, 128)
+        )
+
+        h = down(in_shape[1], 3, 2, 1, 4)
+        w = down(in_shape[2], 3, 2, 1, 4)
+        self.dis = nn.Sequential(
+            nn.Linear(128 * h * w, 1),
+            nn.Sigmoid()
+        )
+        self.cls = nn.Linear(128 * h * w, dim_label)
+        self.aux = nn.Linear(128 * h * w, dim_code)
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.normal_(m.weight.data, 0., 0.02)
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.normal_(m.weight.data, 1., 0.02)
+                nn.init.constant_(m.bias.data, 0.)
+
+    def forward(self, inputs):
+        features = self.conv(inputs).flatten(start_dim=1)
+        probs = self.dis(features).squeeze()
+        logits = self.cls(features)
+        codes = self.aux(features)
+        return probs, logits, codes
+
+
+
+if __name__ == "__main__":
+    import torch.nn.functional as F
+    g = Generator((1, 28, 28))
+    d = Discriminator((1, 28, 28))
+    z = torch.rand(10, 62)
+    k = torch.randint(0, 9, (10,))
+    k = F.one_hot(k, num_classes=10).float()
+    c = torch.distributions.Uniform(-1, 1).sample((10, 2))
+    inputs = torch.cat((z, k, c), dim=1)
+    x = g(inputs)
+    print(x.size())
+    y1, y2, y3 = d(x)
+    print(y1.size())
+    print(y2.size())
+    print(y3.size())
+
+
+
+
+
+
+
+
+
+

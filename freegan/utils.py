@@ -51,12 +51,17 @@ class ProgressMeter:
         for meter in self.meters:
             meter.reset()
 
-def imagemeter(imgs):
-    imgs = imgs.clone().detach().cpu().numpy().transpose((0, 2, 3, 1))
-    num = imgs.shape[0]
-    fp = FreePlot((1, num), (num, 1), dpi=100)
-    for i in range(num):
-        fp.imageplot(imgs[i], index=i)
+def imagemeter(*imgs):
+    rows = len(imgs)
+    imgs = [
+        img.clone().detach().cpu().numpy().transpose((0, 2, 3, 1))
+        for img in imgs
+    ]
+    cols = imgs[0].shape[0]
+    fp = FreePlot((rows, cols), (cols, rows), dpi=100)
+    for row in range(rows):
+        for col in range(cols):
+            fp.imageplot(imgs[row][col], index=row * cols + col)
     return fp.fig
 
 

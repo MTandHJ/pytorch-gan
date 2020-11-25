@@ -57,8 +57,6 @@ class LAPCoach:
 
     def ahead(self, imgs, level):
         downsamples = self.opd(imgs)
-        upsamples = self.opu(downsamples)
-        diffs = imgs - upsamples
         generator = self.generators[level]
         discriminator = self.discriminators[level]
 
@@ -71,10 +69,13 @@ class LAPCoach:
         discriminator.eval()
         z = generator.sampler(batch_size, rtype="uniform")
         if level < self.levels-1:
+            upsamples = self.opu(downsamples)
+            # diffs = imgs - upsamples
             temp = torch.cat((upsamples, z), dim=1)
             inputs_fake = generator(temp) + upsamples
         else:
             inputs_fake = generator(z)
+        inputs_fake = self.sigmoid(inputs_fake)
         outs_g = discriminator(inputs_fake)
         loss_g = generator.criterion(outs_g, labels_real) # real...
 

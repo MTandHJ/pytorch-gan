@@ -67,6 +67,12 @@ def load_model(model_type: str):
     elif model_type == "lapgan-d":
         from models.lapgan import Discriminator
         model = Discriminator
+    elif model_type == "infogan-g":
+        from models.infogan import Generator
+        model = Generator
+    elif model_type == "infogan-d":
+        from models.infogan import Discriminator
+        model = Discriminator
     else:
         raise ModelNotDefineError(f"model {model_type} is not defined.\n" \
                     f"Refer to the following: {load_model.__doc__}\n")
