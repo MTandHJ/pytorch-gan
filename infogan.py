@@ -29,7 +29,7 @@ parser.add_argument("--dim_noise", type=int, default=62)
 parser.add_argument("--dim_code", type=int, default=2)
 parser.add_argument("-cg", "--criterion_g", type=str, default="bce")
 parser.add_argument("-og", "--optimizer_g", type=str, choices=("sgd", "adam"), default="adam")
-parser.add_argument("-lrg", "--lr_g", "--LR_G", "--learning_rate_g", type=float, default=0.002,
+parser.add_argument("-lrg", "--lr_g", "--LR_G", "--learning_rate_g", type=float, default=0.0002,
                 help="in the paper, 0.0002 was chosen")
 parser.add_argument("-lpg", "--learning_policy_g", type=str, default="none", 
                 help="learning rate schedule defined in config.py")

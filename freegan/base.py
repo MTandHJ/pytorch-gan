@@ -29,7 +29,7 @@ class Generator(nn.Module):
         self.optimizer = optimizer
         self.learning_policy = learning_policy
     
-    def sampler(self, batch_size, rtype="gaussian"):
+    def sampler(self, batch_size, rtype="uniform"):
         size = [batch_size] + self.dim_latent
         if rtype == "gaussian":
             return torch.randn(size).to(self.device)

@@ -68,7 +68,7 @@ python cgan.py cifar10
 
 > Denton E., Chintala S., Szlam A. & Fergus R. Deep Generative Image Models using a Laplacian Pyramid of Adversarial Networks. arXiv preprint arXiv 1506.05751, 2015.
 
-**Fail**
+
 
 ```
 python lapgan.py mnist
@@ -76,6 +76,8 @@ python lapgan.py cifar10
 ```
 
 
+
+**FAIL TO IMPLEMENT IT.**
 
 **remark:** I feel troublesome to implement it exactly which has so many hyper parameters to control for different datasets. Therefore, I just try a simple way to implement it which could be used in both MNIST and CIFAR-10.
 
@@ -119,9 +121,8 @@ python infogan.py cifar10 --dim_noise=128 --dim_code=4
 
 
 
+![image-20201126111359518](README.assets/image-20201126111359518.png)
 
 
 
-
-
-
+**remark:** I feel puzzled why the top row, which should show logits from 0 to 9,  is out-of-order yet. On the other hand, some implementations use another optimizer to train both generator and discriminator for info loss, however, I found no use at all in practice. Maybe some hyper paramters should be tuned more carefully.

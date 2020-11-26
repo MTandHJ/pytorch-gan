@@ -39,7 +39,6 @@ class InfoGANGenerator(Generator):
     def sample_codes(self, batch_size):
         return self._sampler_codes((batch_size, self.dim_code)).to(self.device)
 
-    
     def sampler(self, batch_size):
         noise = self.sample_noise(batch_size)
         labels = self.sample_labels(batch_size)
@@ -54,6 +53,7 @@ class InfoGANGenerator(Generator):
         codes = torch.zeros((self.dim_label, self.dim_code)).to(self.device)
         inputs1 = torch.cat((noise, labels, codes), dim=1)
         imgs1 = self(inputs1)
+        noise = torch.rand(self.dim_noise).repeat((self.dim_label, 1)).to(self.device)
         labels = torch.ones(self.dim_label) * torch.randint(0, self.dim_label, (1,))
         labels = F.one_hot(labels.long(), num_classes=self.dim_label).float().to(self.device)
         temp = torch.randint(0, self.dim_code, (1,)).item()
