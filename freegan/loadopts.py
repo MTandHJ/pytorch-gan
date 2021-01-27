@@ -43,43 +43,23 @@ def load_model(model_type: str):
     cgan-g: the generator defined in cgan.py
     cgan-d: the discriminator defined in the cgan.py
     """
-    if model_type == "gan-g":
-        from models.gan import Generator
-        model = Generator
-    elif model_type == "gan-d":
-        from models.gan import Discriminator
-        model = Discriminator
-    elif model_type == "dcgan-g":
-        from models.dcgan import Generator
-        model = Generator
-    elif model_type == "dcgan-d":
-        from models.dcgan import Discriminator
-        model = Discriminator
-    elif model_type == "cgan-g":
-        from models.cgan import Generator
-        model = Generator
-    elif model_type == "cgan-d":
-        from models.cgan import Discriminator
-        model = Discriminator
-    elif model_type == "lapgan-g":
-        from models.lapgan import Generator
-        model = Generator
-    elif model_type == "lapgan-d":
-        from models.lapgan import Discriminator
-        model = Discriminator
-    elif model_type == "infogan-g":
-        from models.infogan import Generator
-        model = Generator
-    elif model_type == "infogan-d":
-        from models.infogan import Discriminator
-        model = Discriminator
-    else:
-        raise ModelNotDefineError(f"model {model_type} is not defined.\n" \
+    types = {
+        "g": "Generator",
+        "d": "Discriminator"
+    }
+    name, model_type = model_type.split("-")
+    module_name = "models." + name
+    try:
+        model= types[model_type]
+        module = __import__(module_name)
+        model = getattr(getattr(module, name), model)
+    except AttributeError:
+       raise ModelNotDefineError(f"model {model_type} is not defined.\n" \
                     f"Refer to the following: {load_model.__doc__}\n")
     return model
 
 
-def load_loss_func(loss_type: str):
+def load_loss_func(loss_type: str, **kwargs):
     """
     cross_entropy: the softmax cross entropy loss
     bce: binary cross entropy
@@ -93,6 +73,9 @@ def load_loss_func(loss_type: str):
     elif loss_type == "mse":
         from .loss_zoo import mse_loss
         loss_func = mse_loss
+    elif loss_type == "energy":
+        from .loss_zoo import Energy
+        loss_func = Energy(**kwargs)
     else:
         raise LossNotDefineError(f"Loss {loss_type} is not defined.\n" \
                     f"Refer to the following: {load_loss_func.__doc__}")

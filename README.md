@@ -126,3 +126,13 @@ python infogan.py cifar10 --dim_noise=128 --dim_code=4
 
 
 **remark:** I feel puzzled why the top row, which should show logits from 0 to 9,  is out-of-order yet. On the other hand, some implementations use another optimizer to train both generator and discriminator for info loss, however, I found no use at all in practice. Maybe some hyper paramters should be tuned more carefully.
+
+
+## EBGAN
+
+> Zhao J., Mathieu M. & LeCun Y. Energy-based generative adversarial networks. ICLR, 2017.
+
+
+```
+python ebgan.py mnist
+```
