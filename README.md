@@ -136,3 +136,7 @@ python infogan.py cifar10 --dim_noise=128 --dim_code=4
 ```
 python ebgan.py mnist
 ```
+
+
+
+![image-20210129225752672](README.assets/image-20210129225752672.png)
